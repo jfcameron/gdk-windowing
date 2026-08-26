@@ -1,19 +1,35 @@
-<!-- 
-[![Build Status](https://travis-ci.org/jfcameron/simple-glfw.svg?branch=master)](https://travis-ci.org/jfcameron/simple-glfw) [![Coverage Status](https://coveralls.io/repos/github/jfcameron/simple-glfw/badge.svg?branch=master)](https://coveralls.io/github/jfcameron/simple-glfw?branch=master) [![Documentation](https://img.shields.io/badge/documentation-doxygen-blue.svg)](https://jfcameron.github.io/simple-glfw/)
--->
-
 ## gdk-window
 
-crossplatform window interface + a GLFW-based implementation
+windowing library specific for games. Use to make one or more windows, the library prepares the drawing surface, the graphics context, etc, as well as clipboard support, input events and so on.
+Strong separation between interface and implementation. C++20 conforming. Provides a glfw based implementation.
 
-## documentation & build info
+Example:
 
-see `.travis.yml` for build instructions
+```cpp
+#include <gdk/windowing/impl_glfw_window.h> // choosing the glfw implementation
+#include <gdk/windowing/context.h>
+#include <gdk/windowing/window.h>
 
-Documentation can be viewed online here: https://jfcameron.github.io/simple-glfw/
-<!--
-Coverage calculated with gcov viewable here: https://coveralls.io/github/jfcameron/gdk-graphics
-CI done using Travis CI. Build scripts cover Windows, Linux, Mac; Clang, GCC, MSVC, MinGW: https://travis-ci.org/jfcameron/gdk-graphics
-catch2 unit tests available under `test/`.
--->
+using namespace gdk::windowing;
+
+const context_ptr_type pContext = impl_glfw_context::make();
+const window_ptr_type pWindow = pContext->make_window("my game", {800, 600});
+
+while (!pWindow->should_close()) {
+    pContext->poll_events();
+
+    // draw
+
+    pWindow->swap_buffers();
+}
+```
+## building
+
+see `CMakePresets.json` 
+
+```
+cmake --preset linux-gcc
+cmake --build --preset linux-gcc
+ctest --preset linux-gcc
+```
 

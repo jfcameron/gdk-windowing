@@ -1,4 +1,12 @@
-# © 2018 Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - All Rights Reserved
+
+if(EMSCRIPTEN)
+    # Emscripten ships glfw as a port of its own, reached with `-sUSE_GLFW=3`: it provides the headers
+    # at compile time and wires the implementation to the browser's canvas and event loop at link time.
+    jfc_set_dependency_symbols(INCLUDE_PATHS "${PROJECT_BINARY_DIR}")
+
+    return()
+endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")

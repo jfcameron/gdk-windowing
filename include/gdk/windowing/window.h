@@ -1,23 +1,19 @@
 // © Joseph Cameron - All Rights Reserved
 
-#ifndef GDK_WINDOW_H
-#define GDK_WINDOW_H
+#ifndef GDK_WINDOWING_WINDOW_H
+#define GDK_WINDOWING_WINDOW_H
+
+#include <gdk/windowing/types.h>
 
 #include <array>
 #include <cstddef>
-#include <functional>
-#include <memory>
-#include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
-namespace gdk {
+namespace gdk::windowing {
+    /// \brief a place on the screen that a renderer can draw into, and that the user can interact with
     class window {
     public:
-        using window_size_type = std::pair<int, int>;
-		using window_aspect_ratio_type = double;
-        using cursor_position_type = std::pair<double, double>;
         using cursor_image_type = std::array<unsigned char, 16 * 16 * 4>;
 
         //! POD structure for holding icon image data. RGBA32 format of userdefined dimensions
@@ -58,8 +54,12 @@ namespace gdk {
         //! set the window's cursor graphic from a standard graphic provided by the system
         virtual void set_cursor(const standard_cursor_graphic cursor) = 0;
 
-		//! sets the should close flag to true
-		virtual void close() = 0;
+        //! sets the should close flag to true
+        virtual void close() = 0;
+
+        //! present whatever has been drawn since the last call
+        /// \attention must be called to see an updated image. usually done once per frame
+        virtual void swap_buffers() = 0;
 
         //! get the name of the window
         [[nodiscard]] virtual std::string_view name() const = 0; 
@@ -67,16 +67,21 @@ namespace gdk {
         //! Get size in pixels of the window
         [[nodiscard]] virtual window_size_type window_size() const = 0;
 
-		//! Get the aspect ratio of the window
-		[[nodiscard]] virtual window_aspect_ratio_type aspect_ratio() const = 0;
-
-        //! Get the normalized position of the mouse cursor within the window
-        [[nodiscard]] virtual cursor_position_type cursor_position() const = 0;
+        //! Get the aspect ratio of the window
+        [[nodiscard]] virtual window_aspect_ratio_type aspect_ratio() const = 0;
 
         //! Indicates to the caller than the window has been requested to be closed
         [[nodiscard]] virtual bool should_close() const = 0;
+
+        /// There is deliberately no cursor position here. Reading the user is gdk-input's domain, and
+        /// it already offers the same value -- `input_context::mouse_cursor_position`, normalised the
+        /// same way. This interface carries what a renderer needs from a surface.
+        /// \see ROADMAP_GDK_WINDOW.md §6b
+
+        /// Present so that deleting through a pointer to this interface is defined. An abstract base
+        /// without one is a leak waiting for the first caller who holds the base type.
+        virtual ~window() = default;
     };
 }
 
 #endif
-
