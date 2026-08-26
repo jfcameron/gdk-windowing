@@ -1,25 +1,14 @@
-# © 2018 Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - All Rights Reserved
 
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-    set(CMAKE_EXECUTABLE_SUFFIX .html) # bit of a hack. Probably should be parameterized.
+    set(CMAKE_EXECUTABLE_SUFFIX .html) 
 endif()
 
-jfc_project(executable
-    NAME "simpleglfw-demo"
-    VERSION 1.0
-    DESCRIPTION "demo simpleglfw app"
-    C++_STANDARD 17
-    C_STANDARD 90
+project(gdkwindow-demo)
 
-    SOURCE_LIST
-        ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    
-    PRIVATE_INCLUDE_DIRECTORIES
-        "${simpleglfw_INCLUDE_DIRECTORIES}"
+add_executable(gdkwindow-demo
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
-    LIBRARIES
-        "${simpleglfw_LIBRARIES}"
+target_link_libraries(gdkwindow-demo PRIVATE gdkwindow)
 
-    DEPENDENCIES
-        "simpleglfw"
-)
+target_compile_features(gdkwindow-demo PRIVATE cxx_std_20)
