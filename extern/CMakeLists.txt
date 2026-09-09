@@ -1,15 +1,13 @@
 # © 2018 Joseph Cameron - All Rights Reserved
 
 if(NOT CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-    set(dependencies
-        "glfw"
-    )
-jfc_add_dependencies(${dependencies})
+    include("${CMAKE_CURRENT_LIST_DIR}/glfw.cmake")
 else()
     set(glfw_INCLUDE_DIR "/Users/josephcameron/Workspace/emscripten/system/include")
 
-    project("glfw")
+    if (NOT TARGET glfw)
+        add_library(glfw INTERFACE)
 
-    add_custom_target(glfw)
+        target_include_directories(glfw INTERFACE "$<BUILD_INTERFACE:${glfw_INCLUDE_DIR}>")
+    endif()
 endif()
-

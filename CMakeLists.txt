@@ -2,7 +2,9 @@
 
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
-project(null)
+project(gdkwindow
+    VERSION 0.5
+    DESCRIPTION "crossplatform window interface and a glfw implementation of it")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/jfc-cmake/jfclib.cmake")
 
@@ -55,31 +57,35 @@ else()
     endforeach()
 endif()
 
-jfc_project(library
-    NAME "gdkwindow"
-    VERSION 0.5
-    DESCRIPTION "crossplatform window interface and a glfw implementation of it"
-    C++_STANDARD 20
-    C_STANDARD 90
-    TYPE STATIC
+add_library(gdkwindow STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_glfw_window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_null_window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/exception.cpp)
 
-    PUBLIC_INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/impl/include
+add_library(gdk::window ALIAS gdkwindow)
 
-        ${glfw_INCLUDE_DIR}
+set_target_properties(gdkwindow PROPERTIES EXPORT_NAME window)
 
-    LIBRARIES
-        ${glfw_LIBRARIES}
+set_target_properties(gdkwindow PROPERTIES PREFIX "lib")
 
-    DEPENDENCIES
-        ${platform_dependencies}
+jfc_generate_cmake_header()
 
-    SOURCE_LIST
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_glfw_window.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_null_window.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/exception.cpp
-)
+target_include_directories(gdkwindow
+    PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/impl/include>"
+        "$<INSTALL_INTERFACE:include>"
+    PRIVATE
+        "${PROJECT_BINARY_DIR}/generated_include/"
+    )
+
+target_compile_features(gdkwindow PUBLIC cxx_std_20)
+
+target_link_libraries(gdkwindow PUBLIC glfw)
+
+if (platform_dependencies)
+    add_dependencies(gdkwindow ${platform_dependencies})
+endif()
 
 set_property(TARGET gdkwindow PROPERTY CXX_EXTENSIONS OFF)
 
