@@ -68,7 +68,7 @@ set_target_properties(gdkwindow PROPERTIES EXPORT_NAME window)
 
 set_target_properties(gdkwindow PROPERTIES PREFIX "lib")
 
-jfc_generate_cmake_header()
+jfc_generate_build_info()
 
 target_include_directories(gdkwindow
     PUBLIC

@@ -1,11 +1,6 @@
 // © Joseph Cameron - All Rights Reserved
 
-// Note that in this file OpenGL is the only GL supported. GLFW itself is not responsible for graphics context initialization etc, so
-// support for Vulkan and DirectX could be written here, and made selectable by the user via cmake flags.
-// alternatively, the glfw implementation could provide callback apis so the user can provide that code
-// or the glfw impl could be renamed glfw_webgles, since that better reflects what it does.
-
-#include <gdkwindow/buildinfo.h>
+#include <gdk/windowing/build_info.h>
 
 #include <gdk/windowing/impl_glfw_window.h>
 
