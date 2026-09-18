@@ -39,6 +39,21 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Linux dependencies
+              if: startsWith(matrix.runner, 'ubuntu-')
+              run: |
+                sudo apt-get update
+                sudo apt-get install --no-install-recommends -y \
+                  libwayland-bin \
+                  libwayland-dev \
+                  libx11-dev \
+                  libxcursor-dev \
+                  libxi-dev \
+                  libxinerama-dev \
+                  libxkbcommon-dev \
+                  libxrandr-dev \
+                  wayland-protocols
+
       - name: configure
         run: cmake --preset ${{ matrix.preset }}
 
