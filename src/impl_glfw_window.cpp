@@ -245,6 +245,10 @@ void impl_glfw_window::close() {
 	glfwSetWindowShouldClose(m_pGLFWWindow.get(), true);
 }
 
+void impl_glfw_window::keep_open() {
+	glfwSetWindowShouldClose(m_pGLFWWindow.get(), false);
+}
+
 void impl_glfw_window::set_icons(const icon_image_collection_type &aIconImages) {
     if (aIconImages.empty()) {
         glfwSetWindowIcon(m_pGLFWWindow.get(), 0, nullptr);

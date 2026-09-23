@@ -57,6 +57,9 @@ namespace gdk::windowing {
         //! sets the should close flag to true
         virtual void close() = 0;
 
+        /// \brief clears the should close flag
+        virtual void keep_open() = 0;
+
         //! present whatever has been drawn since the last call
         /// \attention must be called to see an updated image. usually done once per frame
         virtual void swap_buffers() = 0;

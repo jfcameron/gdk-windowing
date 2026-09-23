@@ -34,6 +34,8 @@ namespace gdk::windowing {
 
     void impl_null_window::close() { mShouldClose = true; }
 
+    void impl_null_window::keep_open() { mShouldClose = false; }
+
     void impl_null_window::swap_buffers() { ++mSwapCount; }
 
     std::string_view impl_null_window::name() const { return mName; }

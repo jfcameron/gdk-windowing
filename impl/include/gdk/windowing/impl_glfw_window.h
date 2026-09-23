@@ -47,6 +47,8 @@ namespace gdk::windowing {
         [[nodiscard]] virtual window_size_type window_size() const override;
         virtual void close() override;
 
+        virtual void keep_open() override;
+
         virtual ~impl_glfw_window() override = default;
 
     private:

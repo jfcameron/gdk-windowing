@@ -26,6 +26,8 @@ namespace gdk::windowing {
         virtual void set_cursor(const cursor_image_type &aRGBA32PNG) override;
         virtual void set_cursor(const standard_cursor_graphic aCursor) override;
         virtual void close() override;
+
+        virtual void keep_open() override;
         virtual void swap_buffers() override;
 
         [[nodiscard]] virtual std::string_view name() const override;
