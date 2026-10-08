@@ -174,7 +174,15 @@ namespace {
         std::call_once(glewInitFlag, []() {
             glewExperimental = true; 
 
-            if (GLenum err = glewInit() != GLEW_OK) {
+            const GLenum err = glewInit();
+
+#if defined JFC_TARGET_PLATFORM_Linux
+            const bool loaded = err == GLEW_OK || err == GLEW_ERROR_NO_GLX_DISPLAY;
+#else
+            const bool loaded = err == GLEW_OK;
+#endif
+
+            if (!loaded) {
                 std::stringstream ss;
                 ss << TAG << "/glewinit failed: " << glewGetErrorString(err);
                 throw gdk::windowing::exception(ss.str());
