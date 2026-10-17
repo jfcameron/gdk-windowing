@@ -26,11 +26,11 @@ set(JFC_BUILD_TESTS "${_jfc_outer_build_tests}" CACHE BOOL "" FORCE)
 set(JFC_BUILD_DOCS "${_jfc_outer_build_docs}" CACHE BOOL "" FORCE)
 set(JFC_BUILD_DEMO "${_jfc_outer_build_demo}" CACHE BOOL "" FORCE)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "Windows")
+if((CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT ANDROID) OR CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(platform_dependencies "GLEW")
 endif()
 
-if(NOT EMSCRIPTEN)
+if(NOT EMSCRIPTEN AND NOT ANDROID)
     set(platform_dependencies ${platform_dependencies} "glfw")
 endif()
 
@@ -58,9 +58,16 @@ else()
 endif()
 
 add_library(gdkwindow STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_glfw_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_null_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/exception.cpp)
+
+if (ANDROID)
+    target_sources(gdkwindow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_android_window.cpp)
+
+    target_link_libraries(gdkwindow PUBLIC EGL android)
+else()
+    target_sources(gdkwindow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_glfw_window.cpp)
+endif()
 
 add_library(gdk::window ALIAS gdkwindow)
 
@@ -81,7 +88,9 @@ target_include_directories(gdkwindow
 
 target_compile_features(gdkwindow PUBLIC cxx_std_20)
 
-target_link_libraries(gdkwindow PUBLIC glfw)
+if (NOT ANDROID)
+    target_link_libraries(gdkwindow PUBLIC glfw)
+endif()
 
 if (platform_dependencies)
     add_dependencies(gdkwindow ${platform_dependencies})
