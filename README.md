@@ -1,4 +1,4 @@
-## gdk-window
+## gdk-windowing
 
 windowing library specific for games. Use to make one or more windows, the library prepares the drawing surface, the graphics context, etc, as well as clipboard support, input events and so on.
 Strong separation between interface and implementation. C++20 conforming. Provides a glfw based implementation.
