@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_WINDOWING_EXCEPTION_H
 #define GDK_WINDOWING_EXCEPTION_H
@@ -21,7 +21,7 @@ namespace gdk::windowing {
         virtual const char *what() const noexcept override;
 
     private:
-        std::string mWhat = "gdk::exception";
+        std::string mWhat = "gdk::windowing::exception";
     };
 }
 

@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_WINDOWING_TYPES_H
 #define GDK_WINDOWING_TYPES_H
@@ -26,7 +26,6 @@ namespace gdk::windowing {
     };
 
     /// \brief the aspect ratio of a window size
-    /// TODO: move to more appropriate file
     [[nodiscard]] constexpr window_aspect_ratio_type aspect_ratio_of(const window_size_type aSize) {
         return aSize.second == 0
             ? 0

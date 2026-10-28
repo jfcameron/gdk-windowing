@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_WINDOWING_WINDOW_H
 #define GDK_WINDOWING_WINDOW_H
@@ -45,11 +45,12 @@ namespace gdk::windowing {
         /// visual effects of a minifying or maximizing function (non-uniform column widths and or row heights, blurring).
         /// Common icon sizes are 16x16, 32x32, 48x48.
         /// Data format is RGBA 32bit: 4 channels, 1 byte per channel.
+        /// Throws gdk::windowing::exception for an icon whose data is shorter than its dimensions need.
         /// \warning does not affect MacOS. Runtime icon is determined by icons provided in the application bundle. This must be handled at bundle creation time.
         virtual void set_icons(const icon_image_collection_type &aIconImages) = 0;
 
         //! sets the window's cursor graphic from a 16x16 RGBA32 bitmap
-        virtual void set_cursor(const cursor_image_type &aRGBA32PNG) = 0;
+        virtual void set_cursor(const cursor_image_type &aRGBA32) = 0;
 
         //! set the window's cursor graphic from a standard graphic provided by the system
         virtual void set_cursor(const standard_cursor_graphic cursor) = 0;
@@ -67,7 +68,7 @@ namespace gdk::windowing {
         //! get the name of the window
         [[nodiscard]] virtual std::string_view name() const = 0; 
 
-        //! Get size in pixels of the window
+        //! the drawing surface's size in pixels, which is what a renderer's viewport needs
         [[nodiscard]] virtual window_size_type window_size() const = 0;
 
         //! Get the aspect ratio of the window
@@ -76,14 +77,11 @@ namespace gdk::windowing {
         //! Indicates to the caller than the window has been requested to be closed
         [[nodiscard]] virtual bool should_close() const = 0;
 
-        /// There is deliberately no cursor position here. Reading the user is gdk-input's domain, and
-        /// it already offers the same value -- `input_context::mouse_cursor_position`, normalised the
-        /// same way. This interface carries what a renderer needs from a surface.
-        /// \see ROADMAP_GDK_WINDOW.md §6b
-
-        /// Present so that deleting through a pointer to this interface is defined. An abstract base
-        /// without one is a leak waiting for the first caller who holds the base type.
         virtual ~window() = default;
+
+    protected:
+        //! for implementations: throws gdk::windowing::exception for an icon that carries too little data
+        static void require_complete(const icon_image_collection_type &aIconImages);
     };
 }
 
