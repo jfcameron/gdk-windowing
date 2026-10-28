@@ -1,38 +1,20 @@
-# © Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - MIT License
 
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
-project(gdkwindow
-    VERSION 0.5
-    DESCRIPTION "crossplatform window interface and a glfw implementation of it")
+if (TARGET gdkwindowing)
+    return()
+endif()
+
+project(gdk-windowing
+    VERSION 1.0
+    DESCRIPTION "the gdk window interface: a context that makes windows, and a null implementation"
+    LANGUAGES CXX)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/jfc-cmake/jfclib.cmake")
 
-option(JFC_BUILD_DEMO "Build the demo" OFF)
-option(JFC_BUILD_DOCS "Build documentation" OFF)
-option(JFC_BUILD_TESTS "Build unit tests" OFF)
-
-set(_jfc_outer_build_tests "${JFC_BUILD_TESTS}")
-set(_jfc_outer_build_docs "${JFC_BUILD_DOCS}")
-set(_jfc_outer_build_demo "${JFC_BUILD_DEMO}")
-
-set(JFC_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(JFC_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(JFC_BUILD_DEMO OFF CACHE BOOL "" FORCE)
-
-add_subdirectory(extern)
-
-set(JFC_BUILD_TESTS "${_jfc_outer_build_tests}" CACHE BOOL "" FORCE)
-set(JFC_BUILD_DOCS "${_jfc_outer_build_docs}" CACHE BOOL "" FORCE)
-set(JFC_BUILD_DEMO "${_jfc_outer_build_demo}" CACHE BOOL "" FORCE)
-
-if((CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT ANDROID) OR CMAKE_SYSTEM_NAME MATCHES "Windows")
-    set(platform_dependencies "GLEW")
-endif()
-
-if(NOT EMSCRIPTEN AND NOT ANDROID)
-    set(platform_dependencies ${platform_dependencies} "glfw")
-endif()
+option(GDKWINDOWING_BUILD_TESTS "Build unit tests" ${PROJECT_IS_TOP_LEVEL})
+option(GDKWINDOWING_BUILD_DOCS "Build documentation" OFF)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -57,55 +39,70 @@ else()
     endforeach()
 endif()
 
-add_library(gdkwindow STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_null_window.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/exception.cpp)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
-if (ANDROID)
-    target_sources(gdkwindow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_android_window.cpp)
+add_library(gdkwindowing STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/exception.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/window.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/impl/null/src/null_context.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/impl/null/src/null_window.cpp")
 
-    target_link_libraries(gdkwindow PUBLIC EGL android)
-else()
-    target_sources(gdkwindow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/impl_glfw_window.cpp)
-endif()
+add_library(gdk::windowing ALIAS gdkwindowing)
 
-add_library(gdk::window ALIAS gdkwindow)
+set_target_properties(gdkwindowing PROPERTIES EXPORT_NAME windowing PREFIX "lib")
 
-set_target_properties(gdkwindow PROPERTIES EXPORT_NAME window)
-
-set_target_properties(gdkwindow PROPERTIES PREFIX "lib")
-
-jfc_generate_build_info()
-
-target_include_directories(gdkwindow
+target_include_directories(gdkwindowing
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/impl/include>"
-        "$<INSTALL_INTERFACE:include>"
-    PRIVATE
-        "${PROJECT_BINARY_DIR}/generated_include/"
-    )
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/impl/null/include>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_features(gdkwindow PUBLIC cxx_std_20)
+target_compile_features(gdkwindowing PUBLIC cxx_std_20)
 
-if (NOT ANDROID)
-    target_link_libraries(gdkwindow PUBLIC glfw)
-endif()
+add_library(gdkwindowing_conformance INTERFACE)
 
-if (platform_dependencies)
-    add_dependencies(gdkwindow ${platform_dependencies})
-endif()
+target_sources(gdkwindowing_conformance INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/test/conformance/context_conformance.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/test/conformance/window_conformance.cpp")
 
-set_property(TARGET gdkwindow PROPERTY CXX_EXTENSIONS OFF)
+target_include_directories(gdkwindowing_conformance INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/test/conformance")
 
-if (JFC_BUILD_TESTS)
+target_link_libraries(gdkwindowing_conformance INTERFACE gdkwindowing)
+
+install(TARGETS gdkwindowing
+    EXPORT gdk-windowing-targets
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+
+install(DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/impl/null/include/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+install(EXPORT gdk-windowing-targets
+    FILE gdk-windowing-targets.cmake
+    NAMESPACE gdk::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/gdk-windowing")
+
+write_basic_package_version_file(
+    "${PROJECT_BINARY_DIR}/gdk-windowing-config-version.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion)
+
+file(WRITE "${PROJECT_BINARY_DIR}/gdk-windowing-config.cmake"
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/gdk-windowing-targets.cmake\")
+")
+
+install(FILES
+    "${PROJECT_BINARY_DIR}/gdk-windowing-config.cmake"
+    "${PROJECT_BINARY_DIR}/gdk-windowing-config-version.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/gdk-windowing")
+
+if (GDKWINDOWING_BUILD_TESTS)
     add_subdirectory(test)
 endif()
 
-if (JFC_BUILD_DEMO)
-    add_subdirectory(demo)
-endif()
-
-if (JFC_BUILD_DOCS)
+if (GDKWINDOWING_BUILD_DOCS)
     add_subdirectory(docs)
 endif()

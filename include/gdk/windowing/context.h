@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_WINDOWING_CONTEXT_H
 #define GDK_WINDOWING_CONTEXT_H

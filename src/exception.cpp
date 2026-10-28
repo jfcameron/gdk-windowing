@@ -1,6 +1,8 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <gdk/windowing/exception.h>
+
+#include <utility>
 
 namespace gdk::windowing {
     exception::exception(std::string aWhat)
