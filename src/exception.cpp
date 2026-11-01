@@ -2,12 +2,14 @@
 
 #include <gdk/windowing/exception.h>
 
-#include <utility>
-
 namespace gdk::windowing {
-    exception::exception(std::string aWhat)
-    : mWhat(std::move(aWhat))
+    exception::exception()
+    : exception("gdk::windowing::exception")
     {}
 
-    const char *exception::what() const noexcept { return mWhat.c_str(); }
+    exception::exception(const std::string &aWhat)
+    : mpWhat(std::make_shared<const std::string>(aWhat))
+    {}
+
+    const char *exception::what() const noexcept { return mpWhat->c_str(); }
 }

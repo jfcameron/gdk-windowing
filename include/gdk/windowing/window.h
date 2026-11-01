@@ -53,7 +53,7 @@ namespace gdk::windowing {
         virtual void set_cursor(const cursor_image_type &aRGBA32) = 0;
 
         //! set the window's cursor graphic from a standard graphic provided by the system
-        virtual void set_cursor(const standard_cursor_graphic cursor) = 0;
+        virtual void set_cursor(const standard_cursor_graphic aCursor) = 0;
 
         //! sets the should close flag to true
         virtual void close() = 0;
@@ -71,7 +71,6 @@ namespace gdk::windowing {
         //! the drawing surface's size in pixels, which is what a renderer's viewport needs
         [[nodiscard]] virtual window_size_type window_size() const = 0;
 
-        //! Get the aspect ratio of the window
         [[nodiscard]] virtual window_aspect_ratio_type aspect_ratio() const = 0;
 
         //! Indicates to the caller than the window has been requested to be closed
