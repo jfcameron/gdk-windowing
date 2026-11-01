@@ -4,6 +4,7 @@ jfc_add_tests(
     C++_STANDARD 20
 
     TEST_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/exception_test.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/null_window_test.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/null_conformance.cpp"
 

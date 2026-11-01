@@ -25,7 +25,6 @@ namespace gdk::windowing {
         adaptive  //!< same as `on`, except a late frame is presented immediately. Middle ground
     };
 
-    /// \brief the aspect ratio of a window size
     [[nodiscard]] constexpr window_aspect_ratio_type aspect_ratio_of(const window_size_type aSize) {
         return aSize.second == 0
             ? 0
