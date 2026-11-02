@@ -25,6 +25,7 @@ namespace gdk::windowing {
         virtual void set_icons(const icon_image_collection_type &aIconImages) override;
         virtual void set_cursor(const cursor_image_type &aRGBA32) override;
         virtual void set_cursor(const standard_cursor_graphic aCursor) override;
+        virtual void set_fullscreen(const bool aFullscreen) override;
         virtual void close() override;
         virtual void keep_open() override;
         virtual void swap_buffers() override;
@@ -33,6 +34,7 @@ namespace gdk::windowing {
         [[nodiscard]] virtual window_size_type window_size() const override;
         [[nodiscard]] virtual window_aspect_ratio_type aspect_ratio() const override;
         [[nodiscard]] virtual bool should_close() const override;
+        [[nodiscard]] virtual bool fullscreen() const override;
 
         void set_window_size(const window_size_type aWindowSize);
 
@@ -55,6 +57,7 @@ namespace gdk::windowing {
         std::size_t mIconCount{0};
         std::optional<standard_cursor_graphic> mLastStandardCursor;
         bool mShouldClose{false};
+        bool mFullscreen{false};
     };
 }
 

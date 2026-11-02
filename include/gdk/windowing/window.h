@@ -55,6 +55,14 @@ namespace gdk::windowing {
         //! set the window's cursor graphic from a standard graphic provided by the system
         virtual void set_cursor(const standard_cursor_graphic aCursor) = 0;
 
+        //! fills the display the window is on, borderless, or goes back to the place and size it had.
+        /// The display's mode stays as it is, so nothing else on it is disturbed.
+        /// A window that can't change this stays as it is, \see fullscreen.
+        virtual void set_fullscreen(const bool aFullscreen) = 0;
+
+        //! whether the window fills its display, which on some systems catches up a poll or two after asking
+        [[nodiscard]] virtual bool fullscreen() const = 0;
+
         //! sets the should close flag to true
         virtual void close() = 0;
 

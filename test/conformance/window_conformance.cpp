@@ -96,6 +96,25 @@ TEST_CASE("conformance: every cursor can be asked for", "[conformance][window]")
     REQUIRE_NOTHROW(pWindow->set_cursor(window::cursor_image_type{}));
 }
 
+TEST_CASE("conformance: a window can be asked to fill its display and to stop", "[conformance][window]")
+{
+    INFO("implementation: " << conformance::implementation());
+
+    const auto pContext = conformance::make_context();
+    const auto pWindow = a_window(pContext);
+
+    for (const bool fullscreen : {true, true, false, false}) {
+        pWindow->set_fullscreen(fullscreen);
+
+        pContext->poll_events();
+
+        const auto size = pWindow->window_size();
+
+        REQUIRE(size.first > 0);
+        REQUIRE(size.second > 0);
+    }
+}
+
 TEST_CASE("conformance: icons are checked against their dimensions", "[conformance][window]")
 {
     INFO("implementation: " << conformance::implementation());

@@ -28,6 +28,10 @@ void null_window::set_cursor(const cursor_image_type &) { mLastStandardCursor.re
 
 void null_window::set_cursor(const standard_cursor_graphic aCursor) { mLastStandardCursor = aCursor; }
 
+void null_window::set_fullscreen(const bool aFullscreen) { mFullscreen = aFullscreen; }
+
+bool null_window::fullscreen() const { return mFullscreen; }
+
 void null_window::close() { mShouldClose = true; }
 
 void null_window::keep_open() { mShouldClose = false; }
