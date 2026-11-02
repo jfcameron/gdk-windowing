@@ -134,3 +134,19 @@ TEST_CASE("the library has one exception type at its root", "[exception]")
     try { throw exception("from a window"); }
     catch (const std::exception &e) { REQUIRE(std::string(e.what()) == "from a window"); }
 }
+
+TEST_CASE("a null window is fullscreen when asked, and its size stays its own", "[null]")
+{
+    auto pWindow = null_window::make("Sized", {800, 400});
+
+    REQUIRE_FALSE(pWindow->fullscreen());
+
+    pWindow->set_fullscreen(true);
+
+    REQUIRE(pWindow->fullscreen());
+    REQUIRE(pWindow->window_size() == window_size_type{800, 400});
+
+    pWindow->set_fullscreen(false);
+
+    REQUIRE_FALSE(pWindow->fullscreen());
+}
